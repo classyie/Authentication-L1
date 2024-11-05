@@ -41,7 +41,23 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.post("/login", async (req, res) => { });
+app.post("/login", async (req, res) => { 
+  const username = req.body.username;
+  const password = req.body.password;
+  console.log(`Username = ${username}, Password = ${password}`);;
+  try {
+    const result = await db.query('select * from users where email = $1', [username]);
+    const dbpass = result.rows[0].password;
+    if(password === dbpass){
+      res.render('secrets.ejs');
+    }
+    else{
+      res.redirect('/login');
+    }
+  } catch (error) {
+    console.log('error', error);
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
